@@ -93,6 +93,15 @@ def run_aviary(aircraft_filename, phase_info, optimizer=None,
 
     prob.set_initial_guesses()
 
+    ## temp changes 6/6/24 for more verbose output
+    # try:
+    #     prob.run_model()
+    # except:
+    #     pass
+    # prob.model.list_inputs()
+    # prob.model.list_outputs()
+    ##
+
     prob.failed = prob.run_aviary_problem(
         record_filename, restart_filename=restart_filename, run_driver=run_driver, make_plots=make_plots, optimization_history_filename=optimization_history_filename)
 
