@@ -7,10 +7,11 @@ Prints important results for validating with known information about aircraft
 run as: python aviaryPlane.py <airplane csv name>, e.g. python aviaryPlane.py testplane
 """
 import sys
+import pandas as pd
 import aviary.api as av
-# from copy import deepcopy
-# from outputted_phase_info import phase_info  # type: ignore
 from bypassGUI import bypassGUI
+
+# throttle enforcement options: 'path_constraint', 'boundary_constraint', 'bounded', None
 
 # use provided plane name in cli to locate csv and find mission trajectory points
 if len(sys.argv) > 1:
@@ -28,7 +29,14 @@ with open("reports/"+planename+"/mission_summary.md","r") as report:
         if "Total Ground Distance" in line:
             range = float(line.split("|")[2])
 
+df = pd.read_csv("reports/"+planename+"/mission_timeseries_data.csv")
+firstthr = df['throttle (unitless)'][0]
+firstdrag = df['drag (lbf)'][0]
+
+
 print(f"                Total range: {range:10.2f} nmi")
+print(f"       First throttle point: {firstthr:10.2f}")
+print(f"           First drag point: {firstdrag:10.2f} lbf")
 print(f"                 Gross mass: {prob.get_val(av.Mission.Design.GROSS_MASS,units='lbm')[0]:10.2f} lbm")
 print(f"          Total wetted area: {prob.get_val(av.Aircraft.Design.TOTAL_WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
 print(f"           Wing wetted area: {prob.get_val(av.Aircraft.Wing.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
@@ -39,6 +47,9 @@ print(f"        Nacelle wetted area: {prob.get_val(av.Aircraft.Nacelle.WETTED_AR
 
 # ----------
 # extra code that may be useful
+
+# from copy import deepcopy
+# from outputted_phase_info import phase_info  # type: ignore
 
 #FWFM_file = 'models/test_aircraft/aircraft_for_bench_FwFm.csv'
 #myfile = 'mytestplane4.csv'

@@ -51,8 +51,8 @@ aircraft:engine:mass,8169,lbm
 aircraft:engine:num_engines,2,unitless
 aircraft:engine:num_fuselage_engines,0,unitless
 aircraft:engine:num_wing_engines,2,unitless
-aircraft:engine:reference_mass,5359,lbm
-aircraft:engine:reference_sls_thrust,28928.,lbf
+aircraft:engine:reference_mass,8169,lbm
+aircraft:engine:reference_sls_thrust,43500.,lbf
 aircraft:engine:scale_mass,True,unitless
 aircraft:engine:scale_performance,True,unitless
 aircraft:engine:scaled_sls_thrust,43500.,lbf
@@ -164,6 +164,10 @@ settings:equations_of_motion,height_energy
 settings:mass_method,FLOPS
 
 ### mission definition
-# times: 0, 50, 400, 440
+# times: 0, 60, 400, 440
 #  alts: 0, 32000, 32000, 0
 # machs: 0.20, 0.72, 0.72, 0.20
+# optalt: F,F,F
+# optmach: F,F,F
+# takeoff: F
+# landing: F

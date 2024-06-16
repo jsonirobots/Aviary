@@ -151,7 +151,7 @@ aircraft:wing:ultimate_load_factor,3.75,unitless
 #aircraft:wing:wetted_area,2396.56,ft**2
 mission:constraints:max_mach,0.8,unitless
 mission:design:cruise_altitude,32000,ft
-mission:design:gross_mass,171000.0,lbm
+mission:design:gross_mass,101000.0,lbm
 aircraft:design:empty_mass,126000,lbm
 mission:design:range,3200,NM
 mission:design:thrust_takeoff_per_eng,28928.,lbf
@@ -165,6 +165,10 @@ settings:equations_of_motion,height_energy
 settings:mass_method,FLOPS
 
 ### mission definition
-# times: 0, 50, 380, 410
-#  alts: 500, 32000, 32000, 500
-# machs: 0.20, 0.75, 0.75, 0.20
+# times: 0, 60, 380, 410
+#  alts: 0, 32000, 32000, 0
+# machs: 0.20, 0.78, 0.78, 0.20
+# optalt: F,F,F
+# optmach: F,F,F
+# takeoff: F
+# landing: F

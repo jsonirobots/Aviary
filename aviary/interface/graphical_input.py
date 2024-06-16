@@ -57,7 +57,7 @@ class DraggablePoints:
 
 
 def create_phase_info(times, altitudes, mach_values,
-                      polynomial_order, num_segments, optimize_mach_phase_vars, optimize_altitude_phase_vars, user_choices):
+                      polynomial_order, num_segments, optimize_mach_phase_vars, optimize_altitude_phase_vars, user_choices,takeoff=False,landing=False):
     """
     Creates a dictionary containing the information about different flight phases
     based on input times, altitudes, and Mach values.
@@ -109,7 +109,7 @@ def create_phase_info(times, altitudes, mach_values,
 
     # Add pre_mission and post_mission phases
     phase_info['pre_mission'] = {
-        'include_takeoff': False,
+        'include_takeoff': takeoff,
         'optimize_mass': True,
     }
 
@@ -168,7 +168,7 @@ def create_phase_info(times, altitudes, mach_values,
         }
 
     phase_info['post_mission'] = {
-        'include_landing': False,
+        'include_landing': landing,
         'constrain_range': True,
         'target_range': (0., 'nmi'),
     }
