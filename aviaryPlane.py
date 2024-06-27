@@ -7,6 +7,7 @@ Prints important results for validating with known information about aircraft
 run as: python aviaryPlane.py <airplane csv name>, e.g. python aviaryPlane.py testplane
 """
 import sys
+import os
 import pandas as pd
 import aviary.api as av
 from bypassGUI import bypassGUI
@@ -17,6 +18,8 @@ from bypassGUI import bypassGUI
 if len(sys.argv) > 1:
     planename = sys.argv[1]
     phase_info,plane_file = bypassGUI(planename)
+    if len(sys.argv) > 2:
+        option = sys.argv[2]
 
 else:
     raise Exception("No airplane name entered! E.g. python aviaryPlane.py planeName")
@@ -44,6 +47,9 @@ print(f"       Fuselage wetted area: {prob.get_val(av.Aircraft.Fuselage.WETTED_A
 print(f"Horizontal Tail wetted area: {prob.get_val(av.Aircraft.HorizontalTail.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
 print(f"  Vertical Tail wetted area: {prob.get_val(av.Aircraft.VerticalTail.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
 print(f"        Nacelle wetted area: {prob.get_val(av.Aircraft.Nacelle.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
+
+if option == "dashboard":
+    os.system("aviary dashboard "+planename)
 
 # ----------
 # extra code that may be useful

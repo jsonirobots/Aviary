@@ -94,7 +94,7 @@ def run_aviary(aircraft_filename, phase_info, optimizer=None,
     prob.set_initial_guesses()
 
     ## temp changes 6/6/24 for more verbose output
-    if True:
+    if False:
         try:
             prob.run_model()
         except:

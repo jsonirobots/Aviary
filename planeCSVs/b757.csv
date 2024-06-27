@@ -36,7 +36,7 @@ aircraft:design:use_alt_mass,False,unitless
 #aircraft:electrical:mass_scaler,1.25,unitless
 aircraft:engine:additional_mass_fraction,0.,unitless
 aircraft:engine:constant_fuel_consumption,0.,lbm/h
-aircraft:engine:data_file,models/engines/turbofan_28k.deck,unitless
+aircraft:engine:data_file,models/engines/PW2000_Aviary.deck,unitless
 aircraft:engine:flight_idle_thrust_fraction,0.0,unitless
 aircraft:engine:flight_idle_max_fraction,1.0,unitless
 aircraft:engine:flight_idle_min_fraction,0.08,unitless
@@ -164,9 +164,9 @@ settings:equations_of_motion,height_energy
 settings:mass_method,FLOPS
 
 ### mission definition
-# times: 0, 60, 400, 440
-#  alts: 0, 32000, 32000, 0
-# machs: 0.20, 0.72, 0.72, 0.20
+# times: 0, 60, 500, 520
+#  alts: 0, 30000, 30000, 0
+# machs: 0.30, 0.72, 0.72, 0.30
 # optalt: F,F,F
 # optmach: F,F,F
 # takeoff: F

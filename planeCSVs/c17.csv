@@ -17,7 +17,7 @@
 #aircraft:crew_and_payload:num_first_class,11,unitless
 #aircraft:crew_and_payload:num_flight_attendants,3,unitless
 aircraft:crew_and_payload:num_flight_crew,2,unitless
-aircraft:crew_and_payload:cargo_mass,160000,lbm
+aircraft:crew_and_payload:cargo_mass,157000,lbm
 #aircraft:crew_and_payload:num_galley_crew,0,unitless
 #aircraft:crew_and_payload:num_non_flight_crew,3,unitless
 #aircraft:crew_and_payload:num_passengers,239,unitless
@@ -37,7 +37,7 @@ aircraft:design:use_alt_mass,False,unitless
 #aircraft:electrical:mass_scaler,1.25,unitless
 aircraft:engine:additional_mass_fraction,0.,unitless
 aircraft:engine:constant_fuel_consumption,0.,lbm/h
-aircraft:engine:data_file,models/engines/turbofan_28k.deck,unitless
+aircraft:engine:data_file,models/engines/PW2000_Aviary.deck,unitless
 #aircraft:engine:data_file,models/engines/scaledtf.deck,unitless
 aircraft:engine:flight_idle_thrust_fraction,0.0,unitless
 aircraft:engine:flight_idle_max_fraction,1.0,unitless
@@ -155,7 +155,7 @@ mission:constraints:max_mach,0.82,unitless
 mission:design:cruise_altitude,32000,ft
 mission:design:gross_mass,585000.0,lbm
 aircraft:design:empty_mass,282500,lbm
-mission:design:range,2240,NM
+mission:design:range,2420,NM
 mission:design:thrust_takeoff_per_eng,40400.,lbf
 mission:landing:lift_coefficient_max,2.2,unitless
 mission:design:mach,0.7,unitless
@@ -167,10 +167,21 @@ settings:equations_of_motion,height_energy
 settings:mass_method,FLOPS
 
 ### mission definition
-# times: 0, 90, 260, 300
-#  alts: 0, 30000, 30000, 0
-# machs: 0.20, 0.7, 0.7, 0.20
-# optalt: F,F,F
-# optmach: F,F,F
+# times: 0, 50,80, 322, 335
+#  alts: 0, 24000,28000, 28000, 0
+# machs: 0.3, 0.6,0.7, 0.7, 0.3
+# optalt: F,F,F,F
+# optmach: F,F,F,F
 # takeoff: F
 # landing: F
+
+
+# times: 0, 40,70, 309, 329
+#  alts: 0, 20000,26000, 26000, 0
+# machs: 0.3, 0.58,0.7, 0.7, 0.3
+# optalt: F,F,F,F
+# optmach: F,F,F,F
+# takeoff: F
+# landing: F
+
+# actual is: 1500 ft/min to 24k ft (16 min) at M0.5, then 1000 ft/min to cruise alt
