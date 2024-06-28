@@ -48,8 +48,9 @@ print(f"Horizontal Tail wetted area: {prob.get_val(av.Aircraft.HorizontalTail.WE
 print(f"  Vertical Tail wetted area: {prob.get_val(av.Aircraft.VerticalTail.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
 print(f"        Nacelle wetted area: {prob.get_val(av.Aircraft.Nacelle.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
 
-if option == "dashboard":
-    os.system("aviary dashboard "+planename)
+if len(sys.argv) > 2:
+    if option == "dashboard":
+        os.system("aviary dashboard "+planename)
 
 # ----------
 # extra code that may be useful
