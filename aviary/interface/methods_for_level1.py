@@ -15,7 +15,7 @@ def run_aviary(aircraft_filename, phase_info, optimizer=None,
                analysis_scheme=AnalysisScheme.COLLOCATION, objective_type=None,
                record_filename='dymos_solution.db', restart_filename=None, max_iter=50,
                run_driver=True, make_plots=True, phase_info_parameterization=None,
-               optimization_history_filename=None, verbosity=Verbosity.BRIEF):
+               optimization_history_filename=None, verbosity=Verbosity.BRIEF,prob_name = None):
     """
     Run the Aviary optimization problem for a specified aircraft configuration and mission.
 
@@ -63,7 +63,7 @@ def run_aviary(aircraft_filename, phase_info, optimizer=None,
     """
 
     # Build problem
-    prob = AviaryProblem(analysis_scheme, name=Path(aircraft_filename).stem)
+    prob = AviaryProblem(analysis_scheme, name= Path(aircraft_filename).stem if not prob_name else prob_name)
 
     # Load aircraft and options data from user
     # Allow for user overrides here

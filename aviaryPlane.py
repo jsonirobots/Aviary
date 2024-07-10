@@ -17,40 +17,47 @@ from bypassGUI import bypassGUI
 # use provided plane name in cli to locate csv and find mission trajectory points
 if len(sys.argv) > 1:
     planename = sys.argv[1]
-    phase_info,plane_file = bypassGUI(planename)
+    missions,plane_file = bypassGUI(planename)
     if len(sys.argv) > 2:
         option = sys.argv[2]
 
 else:
     raise Exception("No airplane name entered! E.g. python aviaryPlane.py planeName")
 
-prob = av.run_aviary(plane_file, phase_info,
-                     optimizer="SLSQP", make_plots=True,max_iter = 50)
+for key,mission in missions.items():
+    phase_info = mission["phase_info"]
+    mission["prob_name"] = f"{planename}_{key}"
+    mission["prob"] = av.run_aviary(plane_file, phase_info,
+                        optimizer="SLSQP", make_plots=True,max_iter = 50,prob_name=mission["prob_name"])
 
-with open("reports/"+planename+"/mission_summary.md","r") as report:
-    for line in report:
-        if "Total Ground Distance" in line:
-            range = float(line.split("|")[2])
+for key,mission in missions.items():
+    with open("reports/"+mission["prob_name"]+"/mission_summary.md","r") as report:
+        for line in report:
+            if "Total Ground Distance" in line:
+                range = float(line.split("|")[2])
 
-df = pd.read_csv("reports/"+planename+"/mission_timeseries_data.csv")
-firstthr = df['throttle (unitless)'][0]
-firstdrag = df['drag (lbf)'][0]
+    df = pd.read_csv("reports/"+mission["prob_name"]+"/mission_timeseries_data.csv")
+    firstthr = df['throttle (unitless)'][0]
+    firstdrag = df['drag (lbf)'][0]
+    prob = mission["prob"]
 
+    print("=========================================================")
+    print(f"-------------- Problem Name: {mission['prob_name']} -----")
+    print(f"                Total range: {range:10.2f} nmi")
+    print(f"       First throttle point: {firstthr:10.2f}")
+    print(f"           First drag point: {firstdrag:10.2f} lbf")
+    print(f"                 Gross mass: {prob.get_val(av.Mission.Design.GROSS_MASS,units='lbm')[0]:10.2f} lbm")
+    print(f"                 Empty mass: {prob.get_val(av.Aircraft.Design.EMPTY_MASS,units='lbm')[0]:10.2f} lbm")
+    print(f"          Total wetted area: {prob.get_val(av.Aircraft.Design.TOTAL_WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
+    print(f"           Wing wetted area: {prob.get_val(av.Aircraft.Wing.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
+    print(f"       Fuselage wetted area: {prob.get_val(av.Aircraft.Fuselage.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
+    print(f"Horizontal Tail wetted area: {prob.get_val(av.Aircraft.HorizontalTail.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
+    print(f"  Vertical Tail wetted area: {prob.get_val(av.Aircraft.VerticalTail.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
+    print(f"        Nacelle wetted area: {prob.get_val(av.Aircraft.Nacelle.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
 
-print(f"                Total range: {range:10.2f} nmi")
-print(f"       First throttle point: {firstthr:10.2f}")
-print(f"           First drag point: {firstdrag:10.2f} lbf")
-print(f"                 Gross mass: {prob.get_val(av.Mission.Design.GROSS_MASS,units='lbm')[0]:10.2f} lbm")
-print(f"          Total wetted area: {prob.get_val(av.Aircraft.Design.TOTAL_WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
-print(f"           Wing wetted area: {prob.get_val(av.Aircraft.Wing.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
-print(f"       Fuselage wetted area: {prob.get_val(av.Aircraft.Fuselage.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
-print(f"Horizontal Tail wetted area: {prob.get_val(av.Aircraft.HorizontalTail.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
-print(f"  Vertical Tail wetted area: {prob.get_val(av.Aircraft.VerticalTail.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
-print(f"        Nacelle wetted area: {prob.get_val(av.Aircraft.Nacelle.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
-
-if len(sys.argv) > 2:
-    if option == "dashboard":
-        os.system("aviary dashboard "+planename)
+    if len(sys.argv) > 2:
+        if option == "dashboard":
+            os.system("aviary dashboard "+planename)
 
 # ----------
 # extra code that may be useful

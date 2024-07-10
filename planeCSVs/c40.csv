@@ -376,11 +376,20 @@ settings:mass_method,FLOPS
 
 
 
-### mission definition
+### missions definition
+# mission_name: payload
 # times: 0, 60, 380, 410
-#  alts: 0, 32000, 32000, 0
+# altitudes: 0, 32000, 32000, 0
 # machs: 0.30, 0.78, 0.78, 0.30
-# optalt: F,F,F
-# optmach: F,F,F
+# optimize_altitudes: F,F,F
+# optimize_machs: F,F,F
+# takeoff: F
+# landing: F
+# mission_name: ferry
+# times: 0, 60, 380, 410
+# altitudes: 0, 32000, 32000, 0
+# machs: 0.30, 0.68, 0.68, 0.30
+# optimize_altitudes: F,F,F
+# optimize_machs: F,F,F
 # takeoff: F
 # landing: F
