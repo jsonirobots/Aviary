@@ -166,21 +166,21 @@ mission:takeoff:lift_over_drag,17.354,unitless
 settings:equations_of_motion,height_energy
 settings:mass_method,FLOPS
 
-### mission definition
-# times: 0, 50,80, 322, 335
-#  alts: 0, 24000,28000, 28000, 0
+### missions definition
+# mission_name: payload
+# times: 0, 50, 80, 322, 335
+# altitudes: 0, 24000,28000, 28000, 0
 # machs: 0.3, 0.6,0.7, 0.7, 0.3
-# optalt: F,F,F,F
-# optmach: F,F,F,F
+# optimize_altitudes: F,F,F,F
+# optimize_machs: F,F,F,F
 # takeoff: F
 # landing: F
-
-
-# times: 0, 40,70, 309, 329
-#  alts: 0, 20000,26000, 26000, 0
-# machs: 0.3, 0.58,0.7, 0.7, 0.3
-# optalt: F,F,F,F
-# optmach: F,F,F,F
+# mission_name: ferry
+# times: 0, 50, 80, 420, 435
+# altitudes: 0, 24000,28000, 28000, 0
+# machs: 0.3, 0.6,0.7, 0.7, 0.3
+# optimize_altitudes: F,F,F,F
+# optimize_machs: F,F,F,F
 # takeoff: F
 # landing: F
 

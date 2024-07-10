@@ -20,18 +20,19 @@ def bypassGUI(plane_name):
     missions = {}
     current_mission_key = ""
     for line in data[missions_idx+1:]:
-        key,values = line.split("#")[1].strip().split(":")
-        values = values.strip().split(",")
-        if key == "mission_name":
-            current_mission_key = values[0]
-            missions[current_mission_key] = {}
-        elif key == "times" or key == "altitudes" or key == "machs":
-            missions[current_mission_key][key] = [float(element) for element in values]
-        elif key == "optimize_altitudes" or key == "optimize_machs":
-            missions[current_mission_key][key] = [imitateTKboolvar(item) for item in values]
-        elif key == "takeoff" or key == "landing":
-            missions[current_mission_key][key] = True if values[0] == "T" else False
-        else: continue
+        if len(line.split("#")) > 1:
+            key,values = line.split("#")[1].strip().split(":")
+            values = values.strip().split(",")
+            if key == "mission_name":
+                current_mission_key = values[0]
+                missions[current_mission_key] = {}
+            elif key == "times" or key == "altitudes" or key == "machs":
+                missions[current_mission_key][key] = [float(element) for element in values]
+            elif key == "optimize_altitudes" or key == "optimize_machs":
+                missions[current_mission_key][key] = [imitateTKboolvar(item) for item in values]
+            elif key == "takeoff" or key == "landing":
+                missions[current_mission_key][key] = True if values[0] == "T" else False
+            else: continue
         
     users = {'solve_for_distance':False,'constrain_range':True}
 
