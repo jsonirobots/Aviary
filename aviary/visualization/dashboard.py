@@ -11,7 +11,8 @@ from typing import (
     List,
     Iterator,
     Tuple,
-)  # Use typing.List and typing.Tuple for compatibility
+)
+import warnings  # Use typing.List and typing.Tuple for compatibility
 
 import numpy as np
 from bokeh.palettes import Category10
@@ -54,6 +55,27 @@ documentation_text_align = 'left'
 # functions for the aviary command line command
 
 
+def _none_or_str(value):
+    """
+    Get the value of the argparse option.
+
+    If "None", return None. Else, just return the string.
+
+    Parameters
+    ----------
+    value : str
+        The value used by the user on the command line for the argument.
+
+    Returns
+    -------
+    option_value : str or None
+        The value of the option after possibly converting from 'None' to None.
+    """
+    if value == "None":
+        return None
+    return value
+
+
 def _dashboard_setup_parser(parser):
     """
     Set up the aviary subparser for the 'aviary dashboard' command.
@@ -74,14 +96,14 @@ def _dashboard_setup_parser(parser):
         type=str,
         help="Problem case recorder file name",
         dest="problem_recorder",
-        default="aviary_history.db",
+        default="problem_history.db",
     )
     parser.add_argument(
         "--driver_recorder",
-        type=str,
-        help="Driver case recorder file name",
+        type=_none_or_str,
+        help="Driver case recorder file name. Set to None if file is ignored",
         dest="driver_recorder",
-        default=None,
+        default="driver_history.db",
     )
     parser.add_argument(
         "--port",
@@ -118,6 +140,26 @@ def _dashboard_cmd(options, user_args):
         options.driver_recorder,
         options.port,
     )
+
+
+def create_table_pane_from_json(json_filepath):
+    try:
+        with open(json_filepath) as json_file:
+            parsed_json = json.load(json_file)
+
+        # Convert the dictionary to a DataFrame
+        df = pd.DataFrame(list(parsed_json.items()), columns=['Name', 'Value'])
+        table_pane = pn.widgets.Tabulator(df, show_index=False, selectable=False,
+                                          sortable=False,
+                                          disabled=True,  # disables editing of the table
+                                          titles={
+                                              'Name': '',
+                                              'Value': '',
+                                          })
+    except Exception as err:
+        warnings.warn(f"Unable to generate table due to: {err}.")
+        table_pane = None
+    return table_pane
 
 
 # functions for creating Panel Panes given different kinds of
@@ -158,6 +200,18 @@ def create_csv_frame(csv_filepath, documentation):
         report_pane = None
 
     return report_pane
+
+
+def get_run_status(status_filepath):
+    try:
+        with open(status_filepath) as f:
+            status_dct = json.load(f)
+            if status_dct['Exit status'] == 'SUCCESS':
+                return '✅ Success'
+            else:
+                return f"❌ {status_dct['Exit status']}"
+    except Exception as err:
+        return 'Unknown'
 
 
 def create_report_frame(format, text_filepath, documentation):
@@ -436,8 +490,8 @@ def dashboard(script_name, problem_recorder, driver_recorder, port):
         Name of the script file whose results will be displayed by this dashboard.
     problem_recorder : str
         Name of the recorder file containing the Problem cases.
-    driver_recorder : str
-        Name of the recorder file containing the Driver cases.
+    driver_recorder : str or None
+        Name of the recorder file containing the Driver cases. If None, the driver tab will not be added
     port : int
         HTTP port used for the dashboard webapp. If 0, use any free port
     """
@@ -621,6 +675,10 @@ def dashboard(script_name, problem_recorder, driver_recorder, port):
     ####### Results Tab #######
     results_tabs_list = []
 
+    status_pane = create_table_pane_from_json(f"{reports_dir}/status.json")
+    if status_pane:
+        results_tabs_list.append(("Run status pane", status_pane))
+
     # Mission Summary
     mission_summary_pane = create_report_frame(
         "markdown", f"{reports_dir}/mission_summary.md", "A report of mission results from an Aviary problem")
@@ -645,41 +703,40 @@ def dashboard(script_name, problem_recorder, driver_recorder, port):
         )
 
     # Make the Aviary variables table pane
-    if problem_recorder:
-        if os.path.exists(problem_recorder):
+    if os.path.exists(problem_recorder):
 
-            # Make dir reports/script_name/aviary_vars if needed
-            aviary_vars_dir = pathlib.Path(f"reports/{script_name}/aviary_vars")
-            aviary_vars_dir.mkdir(parents=True, exist_ok=True)
+        # Make dir reports/script_name/aviary_vars if needed
+        aviary_vars_dir = pathlib.Path(f"reports/{script_name}/aviary_vars")
+        aviary_vars_dir.mkdir(parents=True, exist_ok=True)
 
-            # copy index.html file to reports/script_name/aviary_vars/index.html
-            aviary_dir = pathlib.Path(importlib.util.find_spec("aviary").origin).parent
+        # copy index.html file to reports/script_name/aviary_vars/index.html
+        aviary_dir = pathlib.Path(importlib.util.find_spec("aviary").origin).parent
 
-            shutil.copy(
-                aviary_dir.joinpath("visualization/assets/aviary_vars/index.html"),
-                aviary_vars_dir.joinpath("index.html"),
+        shutil.copy(
+            aviary_dir.joinpath("visualization/assets/aviary_vars/index.html"),
+            aviary_vars_dir.joinpath("index.html"),
+        )
+        shutil.copy(
+            aviary_dir.joinpath("visualization/assets/aviary_vars/script.js"),
+            aviary_vars_dir.joinpath("script.js"),
+        )
+        # copy script.js file to reports/script_name/aviary_vars/index.html.
+        # mod the script.js file to point at the json file
+        # create the json file and put it in reports/script_name/aviary_vars/aviary_vars.json
+        try:
+            create_aviary_variables_table_data_nested(
+                script_name, problem_recorder
+            )  # create the json file
+
+            aviary_vars_pane = create_report_frame(
+                "html", f"{reports_dir}/aviary_vars/index.html",
+                "Table showing Aviary variables"
             )
-            shutil.copy(
-                aviary_dir.joinpath("visualization/assets/aviary_vars/script.js"),
-                aviary_vars_dir.joinpath("script.js"),
+            results_tabs_list.append(("Aviary Variables", aviary_vars_pane))
+        except Exception as e:
+            issue_warning(
+                f"Unable to create Aviary Variables tab in dashboard due to the error: {str(e)}"
             )
-            # copy script.js file to reports/script_name/aviary_vars/index.html.
-            # mod the script.js file to point at the json file
-            # create the json file and put it in reports/script_name/aviary_vars/aviary_vars.json
-            try:
-                create_aviary_variables_table_data_nested(
-                    script_name, problem_recorder
-                )  # create the json file
-
-                aviary_vars_pane = create_report_frame(
-                    "html", f"{reports_dir}/aviary_vars/index.html",
-                    "Table showing Aviary variables"
-                )
-                results_tabs_list.append(("Aviary Variables", aviary_vars_pane))
-            except Exception as e:
-                issue_warning(
-                    f"Unable do create Aviary Variables tab in dashboard due to the error: {str(e)}"
-                )
 
     # Timeseries Mission Output Report
     mission_timeseries_pane = create_csv_frame(
@@ -744,9 +801,13 @@ def dashboard(script_name, problem_recorder, driver_recorder, port):
     if subsystem_tabs_list:
         high_level_tabs.append(("Subsystems", subsystem_tabs))
     tabs = pn.Tabs(*high_level_tabs, stylesheets=["assets/aviary_styles.css"])
+    tabs.active = 2  # make the Results tab active initially
+
+    # get status of run for display in the header of each page
+    status_string_for_header = get_run_status(f"{reports_dir}/status.json")
 
     template = pn.template.FastListTemplate(
-        title=f"Aviary Dashboard for {script_name}",
+        title=f"Aviary Dashboard for {script_name}:  {status_string_for_header}",
         logo="assets/aviary_logo.png",
         favicon="assets/aviary_logo.png",
         main=[tabs],
