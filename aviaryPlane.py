@@ -32,8 +32,8 @@ if not "rangecheck" in options:
             with open("planeCSVs/tempav.csv","w") as fd:
                 lines = fp.readlines()
                 for i,line in enumerate(lines):
-                    # if "aircraft:design:empty_mass" in line:
-                    #     lines[i] = "# "+line
+                    if "aircraft:design:empty_mass" in line:
+                        lines[i] = "# "+line
                     if "aircraft:crew_and_payload:cargo_mass" in line:
                         if key == "ferry":
                             lines[i] = line.split(",")[0]+",0,"+line.split(",")[2]
@@ -111,17 +111,16 @@ if not "rangecheck" in options:
 # # Add the reserve phase to phase_info
 # phase_info_res.update({'reserve_cruise': reserve_phase_0})
 
-
-        # print("=========================================================")
-        # print(f"-------------- Problem Name: {mission['prob_name']} -----")
-        # print(f"                Total range: {range:10.2f} nmi")
-        # print(f"       First throttle point: {firstthr:10.2f}")
-        # print(f"           First drag point: {firstdrag:10.2f} lbf")
-        # print(f"                 Gross mass: {prob.get_val(av.Mission.Design.GROSS_MASS,units='lbm')[0]:10.2f} lbm")
-        # print(f"                 Empty mass: {prob.get_val(av.Aircraft.Design.EMPTY_MASS,units='lbm')[0]:10.2f} lbm")
-        # print(f"          Total wetted area: {prob.get_val(av.Aircraft.Design.TOTAL_WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
-        # print(f"           Wing wetted area: {prob.get_val(av.Aircraft.Wing.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
-        # print(f"       Fuselage wetted area: {prob.get_val(av.Aircraft.Fuselage.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
-        # print(f"Horizontal Tail wetted area: {prob.get_val(av.Aircraft.HorizontalTail.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
-        # print(f"  Vertical Tail wetted area: {prob.get_val(av.Aircraft.VerticalTail.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
-        # print(f"        Nacelle wetted area: {prob.get_val(av.Aircraft.Nacelle.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
+# print("=========================================================")
+# print(f"-------------- Problem Name: {mission['prob_name']} -----")
+# print(f"                Total range: {range:10.2f} nmi")
+# print(f"       First throttle point: {firstthr:10.2f}")
+# print(f"           First drag point: {firstdrag:10.2f} lbf")
+# print(f"                 Gross mass: {prob.get_val(av.Mission.Design.GROSS_MASS,units='lbm')[0]:10.2f} lbm")
+# print(f"                 Empty mass: {prob.get_val(av.Aircraft.Design.EMPTY_MASS,units='lbm')[0]:10.2f} lbm")
+# print(f"          Total wetted area: {prob.get_val(av.Aircraft.Design.TOTAL_WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
+# print(f"           Wing wetted area: {prob.get_val(av.Aircraft.Wing.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
+# print(f"       Fuselage wetted area: {prob.get_val(av.Aircraft.Fuselage.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
+# print(f"Horizontal Tail wetted area: {prob.get_val(av.Aircraft.HorizontalTail.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
+# print(f"  Vertical Tail wetted area: {prob.get_val(av.Aircraft.VerticalTail.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
+# print(f"        Nacelle wetted area: {prob.get_val(av.Aircraft.Nacelle.WETTED_AREA,units='ft**2')[0]:10.2f} sqft")
