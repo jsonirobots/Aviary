@@ -139,6 +139,9 @@ reports/
 *.tex
 *.tikz
 
+planeCSVs/
+*.csv
+
 #VSCode user settings
 .vscode/
 
