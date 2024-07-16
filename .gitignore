@@ -140,7 +140,6 @@ reports/
 *.tikz
 
 planeCSVs/
-*.csv
 
 #VSCode user settings
 .vscode/
