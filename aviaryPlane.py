@@ -27,6 +27,8 @@ else:
 
 if not "rangecheck" in options:
     for key,mission in missions.items():
+        if "only" in options:
+            if not key in options: continue
         phase_info = mission["phase_info"]
         with open(f"planeCSVs/{planename}.csv","r") as fp:
             with open("planeCSVs/tempav.csv","w") as fd:
@@ -45,9 +47,11 @@ if not "rangecheck" in options:
         mission["prob_name"] = f"{planename}_{key}"
         mission["prob"] = av.run_aviary("planeCSVs/tempav.csv", phase_info,
                             optimizer="SLSQP", make_plots=True,max_iter = 50,prob_name=mission["prob_name"])
+        #mission["prob"].model.list_outputs() # way too many outputs
 
     printdata = []
     for key,mission in missions.items():
+        if not "prob_name" in mission.keys(): continue
         with open("reports/"+mission["prob_name"]+"/mission_summary.md","r") as report:
             for line in report:
                 if "Total Ground Distance" in line:
@@ -66,24 +70,38 @@ if not "rangecheck" in options:
                 prob.get_val(av.Aircraft.Fuselage.WETTED_AREA,units='ft**2')[0],
                 prob.get_val(av.Aircraft.HorizontalTail.WETTED_AREA,units='ft**2')[0],
                 prob.get_val(av.Aircraft.VerticalTail.WETTED_AREA,units='ft**2')[0],
-                prob.get_val(av.Aircraft.Nacelle.WETTED_AREA,units='ft**2')[0]]
+                prob.get_val(av.Aircraft.Nacelle.WETTED_AREA,units='ft**2')[0],
+                prob.get_val(av.Aircraft.Wing.MASS,units='lbm')[0]]
         printdata.append(vals)
 
     print("=====================================================================")
-    units = ["nmi","","lbf","lbm","lbm","sqft","sqft","sqft","sqft","sqft","sqft"]
-    labels = ["Total range","First throttle point","First drag point","Gross mass","Empty mass",
-              "Total wetted area","Wing wetted area","Fuselage wetted area","Horizontal Tail wetted area",
-              "Vertical Tail wetted area","Nacelle wetted area"]
-    for row,(label,unit) in enumerate(zip(labels,units)):
-        if row == 0:
-            titlestuff = ' | '.join([f"{mission['prob_name']:>16}" for mission in missions.values()])
-            print(f"{'Problem Name':>30}: {titlestuff}")
-            print("---------------------------------------------------------------------")
-        numstuff = ' | '.join([f"{printdata[col][row]:10.2f} {unit:5s}" for col,_ in enumerate(printdata)])
-        print(f"{labels[row]:>30}: {numstuff}")
+    # print(dir(av.Aircraft)) -> list of attributes including __xx__ functions
 
-    if "dashboard" in options:
-        os.system("aviary dashboard "+planename)
+    # labels = ["Total range","First throttle point","First drag point","Gross mass","Empty mass",
+    #           "Total wetted area","Wing wetted area","Fuselage wetted area","Horizontal Tail wetted area",
+    #           "Vertical Tail wetted area","Nacelle wetted area","Wing mass"]
+    # for row,label in enumerate(labels):
+    #     if row == 0:
+    #         names=[]
+    #         for mission in missions.values():
+    #             try: names.append(f"{mission['prob_name']:>16}")
+    #             except KeyError: continue
+    #         titlestuff = ' | '.join(names)
+    #         print(f"{'Problem Name':>30}: {titlestuff}")
+    #         print("---------------------------------------------------------------------")
+    #     unit = ""
+    #     if "area" in label: unit = "sqft"
+    #     elif "mass" in label: unit = "lbm"
+    #     elif "range" in label: unit = "nmi"
+    #     numstuff = ' | '.join([f"{printdata[col][row]:10.2f} {unit:5s}" for col,_ in enumerate(printdata)])
+    #     print(f"{labels[row]:>30}: {numstuff}")
+
+    # emptyMs = {"c17":282500,"c40":90000,"b757":128840,"c5":380e3}
+    # if planename in emptyMs.keys():
+    #     error = (printdata[0][4]-emptyMs[planename])/emptyMs[planename]*100
+    #     print(f"Empty mass error: {error:.2f}%")
+    # if "dashboard" in options:
+    #     os.system("aviary dashboard "+planename)
 
 # ----------
 # extra code that may be useful

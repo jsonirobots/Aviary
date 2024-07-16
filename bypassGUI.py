@@ -34,7 +34,7 @@ def bypassGUI(plane_name):
                 missions[current_mission_key][key] = True if values[0] == "T" else False
             else: continue
         
-    users = {'solve_for_distance':False,'constrain_range':True}
+    users = {'solve_for_distance':True,'constrain_range':False}
 
     for mission in missions.values():
         mission["num_segments"] = len(mission["times"])
