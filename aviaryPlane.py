@@ -18,7 +18,7 @@ from bypassGUI import bypassGUI
 options = []
 if len(sys.argv) > 1:
     planename = sys.argv[1]
-    missions,plane_file = bypassGUI(planename)
+    missions, plane_file = bypassGUI(planename)
     if len(sys.argv) > 2:
         options = sys.argv[2:]
 
@@ -26,14 +26,15 @@ else:
     raise Exception("No airplane name entered! E.g. python aviaryPlane.py planeName")
 
 if not "rangecheck" in options:
-    for key,mission in missions.items():
+    for key, mission in missions.items():
         if "only" in options:
-            if not key in options: continue
+            if not key in options:
+                continue
         phase_info = mission["phase_info"]
-        with open(f"planeCSVs/{planename}.csv","r") as fp:
-            with open("planeCSVs/tempav.csv","w") as fd:
+        with open(f"planeCSVs/{planename}.csv", "r") as fp:
+            with open("planeCSVs/tempav.csv", "w") as fd:
                 lines = fp.readlines()
-                for i,line in enumerate(lines):
+                for i, line in enumerate(lines):
                     if "aircraft:design:empty_mass" in line:
                         lines[i] = "# "+line
                     if "aircraft:crew_and_payload:cargo_mass" in line:
@@ -41,18 +42,20 @@ if not "rangecheck" in options:
                             lines[i] = line.split(",")[0]+",0,"+line.split(",")[2]
                         elif key == "morepayload":
                             lines[i] = line.split(",")[0]+",164900,"+line.split(",")[2]
-                    
+
                 fd.writelines(lines)
 
         mission["prob_name"] = f"{planename}_{key}"
-        mission["prob"] = av.run_aviary("planeCSVs/tempav.csv", phase_info,
-                            optimizer="SLSQP", make_plots=True,max_iter = 50,prob_name=mission["prob_name"])
-        #mission["prob"].model.list_outputs() # way too many outputs
+        mission["prob"] = av.run_aviary(
+            "planeCSVs/tempav.csv", phase_info, optimizer="SLSQP", make_plots=True,
+            max_iter=50, prob_name=mission["prob_name"])
+        # mission["prob"].model.list_outputs() # way too many outputs
 
     printdata = []
-    for key,mission in missions.items():
-        if not "prob_name" in mission.keys(): continue
-        with open("reports/"+mission["prob_name"]+"/mission_summary.md","r") as report:
+    for key, mission in missions.items():
+        if not "prob_name" in mission.keys():
+            continue
+        with open("reports/"+mission["prob_name"]+"/mission_summary.md", "r") as report:
             for line in report:
                 if "Total Ground Distance" in line:
                     range = float(line.split("|")[2])
@@ -62,16 +65,16 @@ if not "rangecheck" in options:
         firstdrag = df['drag (lbf)'][0]
         prob = mission["prob"]
 
-        vals = [range,firstthr,firstdrag,
-                prob.get_val(av.Mission.Design.GROSS_MASS,units='lbm')[0],
-                prob.get_val(av.Aircraft.Design.EMPTY_MASS,units='lbm')[0],
-                prob.get_val(av.Aircraft.Design.TOTAL_WETTED_AREA,units='ft**2')[0],
-                prob.get_val(av.Aircraft.Wing.WETTED_AREA,units='ft**2')[0],
-                prob.get_val(av.Aircraft.Fuselage.WETTED_AREA,units='ft**2')[0],
-                prob.get_val(av.Aircraft.HorizontalTail.WETTED_AREA,units='ft**2')[0],
-                prob.get_val(av.Aircraft.VerticalTail.WETTED_AREA,units='ft**2')[0],
-                prob.get_val(av.Aircraft.Nacelle.WETTED_AREA,units='ft**2')[0],
-                prob.get_val(av.Aircraft.Wing.MASS,units='lbm')[0]]
+        vals = [range, firstthr, firstdrag,
+                prob.get_val(av.Mission.Design.GROSS_MASS, units='lbm')[0],
+                prob.get_val(av.Aircraft.Design.EMPTY_MASS, units='lbm')[0],
+                prob.get_val(av.Aircraft.Design.TOTAL_WETTED_AREA, units='ft**2')[0],
+                prob.get_val(av.Aircraft.Wing.WETTED_AREA, units='ft**2')[0],
+                prob.get_val(av.Aircraft.Fuselage.WETTED_AREA, units='ft**2')[0],
+                prob.get_val(av.Aircraft.HorizontalTail.WETTED_AREA, units='ft**2')[0],
+                prob.get_val(av.Aircraft.VerticalTail.WETTED_AREA, units='ft**2')[0],
+                prob.get_val(av.Aircraft.Nacelle.WETTED_AREA, units='ft**2')[0],
+                prob.get_val(av.Aircraft.Wing.MASS, units='lbm')[0]]
         printdata.append(vals)
 
     print("=====================================================================")
@@ -109,8 +112,8 @@ if not "rangecheck" in options:
 # from copy import deepcopy
 # from outputted_phase_info import phase_info  # type: ignore
 
-#FWFM_file = 'models/test_aircraft/aircraft_for_bench_FwFm.csv'
-#myfile = 'mytestplane4.csv'
+# FWFM_file = 'models/test_aircraft/aircraft_for_bench_FwFm.csv'
+# myfile = 'mytestplane4.csv'
 
 # av.default_height_energy_phase_info # default phase info object
 
