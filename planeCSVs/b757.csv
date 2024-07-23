@@ -163,7 +163,7 @@ mission:takeoff:lift_over_drag,17.354,unitless
 settings:equations_of_motion,height_energy
 settings:mass_method,FLOPS
 
-### mission definition
+### missions definition
 # times: 0, 60, 500, 520
 #  alts: 0, 30000, 30000, 0
 # machs: 0.30, 0.72, 0.72, 0.30

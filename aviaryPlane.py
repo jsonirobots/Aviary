@@ -25,7 +25,7 @@ if len(sys.argv) > 1:
 else:
     raise Exception("No airplane name entered! E.g. python aviaryPlane.py planeName")
 
-if not "rangecheck" in options:
+if not "rangecheck" in options and not "checkrange" in options:
     for key, mission in missions.items():
         if "only" in options:
             if not key in options:
@@ -80,31 +80,40 @@ if not "rangecheck" in options:
     print("=====================================================================")
     # print(dir(av.Aircraft)) -> list of attributes including __xx__ functions
 
-    # labels = ["Total range","First throttle point","First drag point","Gross mass","Empty mass",
-    #           "Total wetted area","Wing wetted area","Fuselage wetted area","Horizontal Tail wetted area",
-    #           "Vertical Tail wetted area","Nacelle wetted area","Wing mass"]
-    # for row,label in enumerate(labels):
-    #     if row == 0:
-    #         names=[]
-    #         for mission in missions.values():
-    #             try: names.append(f"{mission['prob_name']:>16}")
-    #             except KeyError: continue
-    #         titlestuff = ' | '.join(names)
-    #         print(f"{'Problem Name':>30}: {titlestuff}")
-    #         print("---------------------------------------------------------------------")
-    #     unit = ""
-    #     if "area" in label: unit = "sqft"
-    #     elif "mass" in label: unit = "lbm"
-    #     elif "range" in label: unit = "nmi"
-    #     numstuff = ' | '.join([f"{printdata[col][row]:10.2f} {unit:5s}" for col,_ in enumerate(printdata)])
-    #     print(f"{labels[row]:>30}: {numstuff}")
+    labels = [
+        "Total range", "First throttle point", "First drag point", "Gross mass",
+        "Empty mass", "Total wetted area", "Wing wetted area", "Fuselage wetted area",
+        "Horizontal Tail wetted area", "Vertical Tail wetted area",
+        "Nacelle wetted area", "Wing mass"]
+    for row, label in enumerate(labels):
+        if row == 0:
+            names = []
+            for mission in missions.values():
+                try:
+                    names.append(f"{mission['prob_name']:>16}")
+                except KeyError:
+                    continue
+            titlestuff = ' | '.join(names)
+            print(f"{'Problem Name':>30}: {titlestuff}")
+            print("---------------------------------------------------------------------")
+        unit = ""
+        if "area" in label:
+            unit = "sqft"
+        elif "mass" in label:
+            unit = "lbm"
+        elif "range" in label:
+            unit = "nmi"
+        numstuff = ' | '.join(
+            [f"{printdata[col][row]:10.2f} {unit:5s}" for col, _ in
+             enumerate(printdata)])
+        print(f"{labels[row]:>30}: {numstuff}")
 
-    # emptyMs = {"c17":282500,"c40":90000,"b757":128840,"c5":380e3}
-    # if planename in emptyMs.keys():
-    #     error = (printdata[0][4]-emptyMs[planename])/emptyMs[planename]*100
-    #     print(f"Empty mass error: {error:.2f}%")
-    # if "dashboard" in options:
-    #     os.system("aviary dashboard "+planename)
+    emptyMs = {"c17": 282500, "c40": 90000, "b757": 128840, "c5": 380e3}
+    if planename in emptyMs.keys():
+        error = (printdata[0][4]-emptyMs[planename])/emptyMs[planename]*100
+        print(f"Empty mass error: {error:.2f}%")
+    if "dashboard" in options:
+        os.system("aviary dashboard "+planename)
 
 # ----------
 # extra code that may be useful

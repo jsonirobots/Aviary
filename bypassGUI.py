@@ -42,8 +42,10 @@ def bypassGUI(plane_name):
 
     users = {'solve_for_distance': True, 'constrain_range': False}
 
-    for mission in missions.values():
+    for mission_name, mission in missions.items():
         mission["num_segments"] = len(mission["times"])
+        users["include_takeoff"] = mission["takeoff"]
+        users["include_landing"] = mission["landing"]
         mission["phase_info"] = create_phase_info(
             times=mission["times"],
             altitudes=mission["altitudes"],
@@ -51,5 +53,7 @@ def bypassGUI(plane_name):
             polynomial_order=1, num_segments=mission["num_segments"],
             optimize_altitude_phase_vars=mission["optimize_altitudes"],
             optimize_mach_phase_vars=mission["optimize_machs"],
-            user_choices=users, takeoff=False, landing=False)
+            user_choices=users, units=["min", "ft", "unitless"],
+            orders=[3] * mission["num_segments"],
+            filename=f"phase_info_{plane_name}_{mission_name}.py")
     return (missions, plane_filename)

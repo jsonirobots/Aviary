@@ -11,11 +11,13 @@ from aviary.interface.methods_for_level2 import AviaryProblem
 from aviary.utils.functions import get_path
 
 
-def run_aviary(aircraft_filename, phase_info, optimizer=None,
-               analysis_scheme=AnalysisScheme.COLLOCATION, objective_type=None,
-               record_filename='problem_history.db', restart_filename=None, max_iter=50,
-               run_driver=True, make_plots=True, phase_info_parameterization=None,
-               optimization_history_filename=None, verbosity=Verbosity.BRIEF,prob_name = None):
+def run_aviary(
+        aircraft_filename, phase_info, optimizer=None,
+        analysis_scheme=AnalysisScheme.COLLOCATION, objective_type=None,
+        record_filename='problem_history.db', restart_filename=None, max_iter=50,
+        run_driver=True, make_plots=True, phase_info_parameterization=None,
+        optimization_history_filename=None, verbosity=Verbosity.BRIEF, prob_name=None,
+        objref=None):
     """
     Run the Aviary optimization problem for a specified aircraft configuration and mission.
 
@@ -63,12 +65,14 @@ def run_aviary(aircraft_filename, phase_info, optimizer=None,
     """
 
     # Build problem
-    prob = AviaryProblem(analysis_scheme, name= Path(aircraft_filename).stem if not prob_name else prob_name)
+    prob = AviaryProblem(
+        analysis_scheme, name=Path(aircraft_filename).stem
+        if not prob_name else prob_name)
 
     # Load aircraft and options data from user
     # Allow for user overrides here
     prob.load_inputs(aircraft_filename, phase_info, verbosity=verbosity)
-    
+
     # Preprocess inputs
     prob.check_and_preprocess_inputs()
 
@@ -87,24 +91,26 @@ def run_aviary(aircraft_filename, phase_info, optimizer=None,
 
     # Load optimization problem formulation
     # Detail which variables the optimizer can control
-    prob.add_objective(objective_type=objective_type)
+    prob.add_objective(objective_type=objective_type, ref=objref)
 
     prob.setup()
 
     prob.set_initial_guesses()
 
-    ## temp changes 6/6/24 for more verbose output
+    # temp changes 6/6/24 for more verbose output
     if False:
         try:
             prob.run_model()
         except:
             pass
         prob.model.list_inputs()
-        prob.model.list_outputs(print_arrays=True,units=True)
+        prob.model.list_outputs(print_arrays=True, units=True)
     ##
 
     prob.failed = prob.run_aviary_problem(
-        record_filename, restart_filename=restart_filename, run_driver=run_driver, make_plots=make_plots, optimization_history_filename=optimization_history_filename)
+        record_filename, restart_filename=restart_filename, run_driver=run_driver,
+        make_plots=make_plots,
+        optimization_history_filename=optimization_history_filename)
 
     return prob
 
@@ -159,9 +165,8 @@ def run_level_1(
 
 def _setup_level1_parser(parser):
     def_outdir = os.path.join(os.getcwd(), "output")
-    parser.add_argument(
-        'input_deck', metavar='indeck', type=str, nargs=1, help='Name of vehicle input deck file'
-    )
+    parser.add_argument('input_deck', metavar='indeck', type=str,
+                        nargs=1, help='Name of vehicle input deck file')
     parser.add_argument(
         "-o", "--outdir", default=def_outdir, help="Directory to write outputs"
     )
